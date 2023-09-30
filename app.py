@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify, make_response
 import uuid  # for public id
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-from models import User, app
-from middleware.jwt import token_required
+from flask_cors import CORS
+from .models import app, setup_db, db, db_drop_and_create_all
+from .models import User
+from middleware.jwt import token_required,jwt
 
 
 @app.route('/user', methods=['GET'])
