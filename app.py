@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from flask_cors import CORS
 from .models import app, setup_db, db, db_drop_and_create_all
 from .models import User
-from middleware.jwt import token_required,jwt
+from .middleware.jwt import token_required,jwt
 
 
 @app.route('/user', methods=['GET'])
@@ -96,17 +96,25 @@ def signup():
 			password=generate_password_hash(password)
 		)
 		# insert user
-		db.session.add(user)
-		db.session.commit()
+		user.insert()
 
 		return make_response('Successfully registered.', 201)
 	else:
 		# returns 202 if user already exists
 		return make_response('User already exists. Please Log in.', 202)
 
+def create_app(app,test_test_config=None):
+    app.config['SECRET_KEY']='57324676734hjvbedhjewr9pp942312y89r321g8t7'
+    with app.app_context():
+        setup_db(app)
+        CORS(app)
+        db_drop_and_create_all() 
+    return app
+    
+APP=create_app(app)
 
 if __name__ == "__main__":
-	# setting debug to True enables hot reload
-	# and also provides a debugger shell
-	# if you hit an error while running the server
-	app.run(debug=True)
+    # Retrieve the port number from the environment variable or use 5000 as the default
+    port = int(os.environ.get("PORT", 5000))
+    # Run the Flask app with the specified host and port
+    APP.run(host='127.0.0.1', port=port, debug=True)
